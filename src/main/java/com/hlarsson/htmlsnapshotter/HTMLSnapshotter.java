@@ -34,9 +34,9 @@ public class HTMLSnapshotter extends HttpServlet {
 
             // important!  Give the headless browser enough time to execute JavaScript
             // The exact time to wait may depend on your application.
-            int jobs = webClient.waitForBackgroundJavaScript(2000);
-
-            out.println(page.asXml());
+            int jobs = webClient.waitForBackgroundJavaScript(10000);
+            
+            out.println(page.asXml().replaceAll("(?s)<script.*?</script>", ""));
         } else {
             out.write("<html><head><title>Missing parameter</title><body><p>" +
                     "Missing parameter " + URL + " or " + ESCAPE_FRAGMENT + ".</p></body></html>");
