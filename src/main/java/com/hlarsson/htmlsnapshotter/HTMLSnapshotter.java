@@ -8,8 +8,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.javascript.background.JavaScriptJob;
+import com.gargoylesoftware.htmlunit.javascript.background.JavaScriptJobManager;
 
 public class HTMLSnapshotter extends HttpServlet {
     private static final String ESCAPE_FRAGMENT = "fragment";
@@ -29,13 +33,13 @@ public class HTMLSnapshotter extends HttpServlet {
                     request.getParameter(URL) + "#!" + request.getParameter(ESCAPE_FRAGMENT),
                     "UTF-8");
 
-            final WebClient webClient = new WebClient();
+            final WebClient webClient = new WebClient(BrowserVersion.INTERNET_EXPLORER_7);
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // important!  Give the headless browser enough time to execute JavaScript
             // The exact time to wait may depend on your application.
-            int jobs = webClient.waitForBackgroundJavaScript(10000);
-            
+            webClient.waitForBackgroundJavaScript(10000);
+
             out.println(page.asXml().replaceAll("(?s)<script.*?</script>", ""));
         } else {
             out.write("<html><head><title>Missing parameter</title><body><p>" +
